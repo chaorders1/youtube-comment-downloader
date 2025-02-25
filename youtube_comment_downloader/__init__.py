@@ -62,21 +62,42 @@ def main(argv = None):
             sys.stdout.flush()
             start_time = time.time()
 
+            fp.write('{\n')
             if pretty:
-                fp.write('{\n' + ' ' * INDENT + '"comments": [\n')
+                fp.write(' ' * INDENT + '"comments": [\n')
+            else:
+                fp.write('"comments":[\n')
+            
+            first_comment = True
 
             comment = next(generator, None)
             while comment:
-                comment_str = to_json(comment, indent=INDENT if pretty else None)
-                comment = None if limit and count >= limit else next(generator, None)  # Note that this is the next comment
-                comment_str = comment_str + ',' if pretty and comment is not None else comment_str
-                print(comment_str.decode('utf-8') if isinstance(comment_str, bytes) else comment_str, file=fp)
+                if not first_comment:
+                    fp.write(',\n')
+                else:
+                    first_comment = False
+                
+                if pretty:
+                    comment_str = to_json(comment, indent=INDENT)
+                    padding = ' ' * (2 * INDENT)
+                    comment_str = padding + comment_str
+                else:
+                    comment_str = to_json(comment, indent=None)
+                
+                fp.write(comment_str.decode('utf-8') if isinstance(comment_str, bytes) else comment_str)
+                
+                comment = None if limit and count >= limit else next(generator, None)
                 sys.stdout.write('Downloaded %d comment(s)\r' % count)
                 sys.stdout.flush()
                 count += 1
 
+            fp.write('\n')
             if pretty:
-                fp.write(' ' * INDENT +']\n}')
+                fp.write(' ' * INDENT + ']\n')
+            else:
+                fp.write(']\n')
+            fp.write('}')
+            fp.flush()
         print('\n[{:.2f} seconds] Done!'.format(time.time() - start_time))
 
     except Exception as e:

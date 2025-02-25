@@ -35,7 +35,7 @@ optional arguments:
 
 For example:
 ```
-youtube-comment-downloader --url https://www.youtube.com/watch?v=ScMzIvxBSi4 --output ScMzIvxBSi4.json
+youtube-comment-downloader --url "https://www.youtube.com/watch?v=ScMzIvxBSi4" --output ScMzIvxBSi4.json
 ```
 or using the Youtube ID:
 ```
